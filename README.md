@@ -15,7 +15,7 @@ Pick a topic, create an _exercise_ using the following suggested template
 3. reference documents, papers
 ```
 
-Work on the solution and keep pushing in a this repo.
+Work on the solution and keep pushing in this repo.
 
 ## Topics list
 
