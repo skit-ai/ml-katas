@@ -28,7 +28,7 @@ README.md  # this readme
 
 ## Topics list
 
-Here is a ever increasing dump of randomly selected topics for inspiration.
+Here is an ever increasing dump of randomly selected topics for inspiration.
 
 - optimization
   - convex, non convex
