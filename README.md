@@ -15,7 +15,16 @@ Pick a topic, create an _exercise_ using the following suggested template
 3. reference documents, papers
 ```
 
-Work on the solution and keep pushing in this repo.
+Work on the solution and keep pushing in this repo. The directory structure can
+look like this:
+
+```
+README.md  # this readme
+<some-problem>
+  README.md  # problem specification
+  <solution-dir-1>  # someone's solution
+  <solution-dir-2>  # someone else's solution
+```
 
 ## Topics list
 
