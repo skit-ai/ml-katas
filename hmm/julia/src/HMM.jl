@@ -129,32 +129,7 @@ Problem 2 from rabiner. NOTE: Only when the observed sequence is words
 and hidden states are tags.
 """
 function predict(model::HMModel, x::Instance)::Prediction
-    # TODO Viterbi, also should understand when anyone throws 'viterbi' as
-    #      a general term around
-end
-
-"""
-Basic error count evaluator for universal tag prediction. We assume data
-from MLDatasets and model from providing array of tags for each sentence.
-
-Also note that this is not the right way to evaluate so we will be careful
-when drawing conclusions.
-"""
-function evaluate(predictions::Array{Prediction,1}, testdata)::Float64
-    @assert length(predictions) == length(testdata)
-
-    errors = 0
-    tagindex = 4
-
-    for (truth, pred) in zip(testdata, predictions)
-        for (tfields, ptag) in zip(truth, pred)
-            if ptag != tfields[tagindex]
-                errors += 1
-            end
-        end
-    end
-
-    errors / sum(map(length, testdata))
+    # TODO
 end
 
 end
