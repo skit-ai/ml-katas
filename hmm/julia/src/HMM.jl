@@ -88,16 +88,18 @@ struct HMModel
     n::Int # Number of states
     m::Int # Number of observation states
 
-    transition::Array{Float64,2}
     initial::Array{Float64,1}
-    # TODO: Emissions should be something different
+    transition::Array{Float64,2}
+
+    # Observation function
+    ofn
     emission::Array{Float64,2}
 end
 
 """
 Return function for getting observation index from input word representation
 """
-function observations_fn(traindata::Array{Instance,1})
+function observationfn(traindata::Array{Instance,1})
     # NOTE: This is very basic observation, will be changing it
     stemindex = 3
 
@@ -110,36 +112,31 @@ function observations_fn(traindata::Array{Instance,1})
     traintokens = unique(sort(traintokens))
     token2index = Dict(tk=>i for (i, tk) in enumerate(traintokens))
 
-    function word2o(word::String)::Int
-        if !(lowercase(word) in keys(token2index))
+    function word2o(word)::Int
+        if !(lowercase(word[stemindex]) in keys(token2index))
             # Last token represents oov
             return length(traintokens) + 1
         else
-            token2index[lowercase(word)]
+            token2index[lowercase(word[stemindex])]
         end
     end
 end
 
 """
-Tell likelihood of observed values (words here).
+Tell log likelihood of observed values (words here).
 """
 function likelihood(model::HMModel, x::Instance)::Float64
-    obindex = 3 # Choosing stem as the observation
-    observations = [w[obindex] for w in x]
-
-    # TODO: We need to go from observation to a certain index
-    o2i(o) = 1
-
-    # Converting to row vector for convenience
     statedist = model.initial'
 
-    totalprob = 0
-    for o in observations
-        totalprob += sum(statedist .* emmission[:, o2i(o)])
-        statedist = statedist * transition
+    logprob = 0
+    for word in x
+        println(sum(statedist))
+        oi = model.ofn(word)
+        logprob += sum(log.(statedist) .+ log.(model.emission[:, oi]))
+        statedist = statedist * model.transition
     end
 
-    totalprob
+    logprob
 end
 
 """
@@ -147,13 +144,14 @@ Estimate parameters for the hmm for supervised training. Use the tags as
 hidden states.
 """
 function hmmtrain_supervised(traindata::Array{Instance,1})::HMModel
+    ofn = observationfn(traindata)
+    m = ofn("some gibberish that is not in vocab")
+
     initial = hmmtrain_initial(traindata)
     transition = hmmtrain_transition(traindata)
     emission = hmmtrain_emission(traindata)
-    ofn = observations_fn(traindata)
-    m = ofn("some gibberish that is not in vocab")
 
-    HMModel(length(TAGS), m, transition, initial, emission)
+    HMModel(length(TAGS), m, initial, transition, ofn, emission)
 end
 
 """
@@ -196,16 +194,16 @@ Return emission probabilities from n states to m observations
 """
 function hmmtrain_emission(traindata::Array{Instance,1})::Array{Float64,2}
     tag2i = Dict(t=>i for (i, t) in enumerate(TAGS))
-    ofn = observations_fn(traindata)
+    ofn = observationfn(traindata)
     m = ofn("some gibberish that is not in vocab")
     stemindex = 3
     tagindex = 4
 
-    # Start with one for smoothing
+    # Start with 1 for smoothing
     emission = ones(length(TAGS), m)
     for x in traindata
         for word in x
-            oi = ofn(word[stemindex])
+            oi = ofn(word)
             ni = tag2i[word[tagindex]]
             emission[ni, oi] += 1
         end
@@ -215,8 +213,7 @@ function hmmtrain_emission(traindata::Array{Instance,1})::Array{Float64,2}
 end
 
 """
-Problem 2 from rabiner. NOTE: Only when the observed sequence is words
-and hidden states are tags.
+NOTE: Only when the observed sequence is words and hidden states are tags.
 """
 function predict(model::HMModel, x::Instance)::Prediction
     # TODO
