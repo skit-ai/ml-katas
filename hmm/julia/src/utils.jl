@@ -1,4 +1,4 @@
-function normalize!(counts::Dict{Any,Any})
+function normalize!(counts)
     total = sum(values(counts))
 
     for k in keys(counts)

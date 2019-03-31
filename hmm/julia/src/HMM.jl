@@ -95,8 +95,33 @@ struct HMModel
 end
 
 """
-Tell likelihood of observed values (words here). This is the
-problem 1 from rabiner.
+Return function for getting observation index from input word representation
+"""
+function observations_fn(traindata::Array{Instance,1})
+    # NOTE: This is very basic observation, will be changing it
+    stemindex = 3
+
+    traintokens = []
+    for x in traindata
+        for word in x
+            push!(traintokens, word[stemindex])
+        end
+    end
+    traintokens = unique(sort(traintokens))
+    token2index = Dict(tk=>i for (i, tk) in enumerate(traintokens))
+
+    function word2o(word::String)::Int
+        if !(word in keys(token2index))
+            # Last token represents oov
+            return length(traintokens) + 1
+        else
+            token2index[word]
+        end
+    end
+end
+
+"""
+Tell likelihood of observed values (words here).
 """
 function likelihood(model::HMModel, x::Instance)::Float64
     obindex = 3 # Choosing stem as the observation
@@ -118,10 +143,31 @@ function likelihood(model::HMModel, x::Instance)::Float64
 end
 
 """
-Estimate parameters for the hmm
+Estimate parameters for the hmm for supervised training. Use the tags as
+hidden states.
 """
-function hmmtrain(traindata::Array{Instance,1})::HMModel
+function hmmtrain_supervised(traindata::Array{Instance,1})::HMModel
+    initial = hmmtrain_initial(traindata)
+    ofn = observations_fn(traindata)
+    m = ofn("some gibberish that is not in vocab")
+
     # TODO
+    HMModel(length(TAGS), m, nothing, initial, nothing)
+end
+
+"""
+Return initial state probabilities
+"""
+function hmmtrain_initial(traindata::Array{Instance,1})::Array{Float64,1}
+    counts::Dict{String,Float64} = Dict(t=>0 for t in TAGS)
+    tagindex = 4
+
+    for x in traindata
+        counts[x[1][tagindex]] += 1
+    end
+
+    normalize!(counts)
+    map(t -> counts[t], TAGS)
 end
 
 """
