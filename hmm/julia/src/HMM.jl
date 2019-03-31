@@ -130,7 +130,6 @@ function likelihood(model::HMModel, x::Instance)::Float64
 
     logprob = 0
     for word in x
-        println(sum(statedist))
         oi = model.ofn(word)
         logprob += sum(log.(statedist) .+ log.(model.emission[:, oi]))
         statedist = statedist * model.transition
