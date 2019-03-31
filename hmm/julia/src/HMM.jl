@@ -148,11 +148,12 @@ hidden states.
 """
 function hmmtrain_supervised(traindata::Array{Instance,1})::HMModel
     initial = hmmtrain_initial(traindata)
+    transition = hmmtrain_transition(traindata)
     ofn = observations_fn(traindata)
     m = ofn("some gibberish that is not in vocab")
 
     # TODO
-    HMModel(length(TAGS), m, nothing, initial, nothing)
+    HMModel(length(TAGS), m, transition, initial, nothing)
 end
 
 """
@@ -168,6 +169,26 @@ function hmmtrain_initial(traindata::Array{Instance,1})::Array{Float64,1}
 
     normalize!(counts)
     map(t -> counts[t], TAGS)
+end
+
+"""
+Return state transition probabilities
+"""
+function hmmtrain_transition(traindata::Array{Instance,1})::Array{Float64,2}
+    tag2i = Dict(t=>i for (i, t) in enumerate(TAGS))
+    tagindex = 4
+    transition = zeros(length(TAGS), length(TAGS))
+
+    for x in traindata
+        for i in 1:(length(x)-1)
+            begtag = x[i][tagindex]
+            endtag = x[i + 1][tagindex]
+
+            transition[tag2i[begtag], tag2i[endtag]] += 1
+        end
+    end
+
+    transition ./ sum(transition, dims=2)
 end
 
 """

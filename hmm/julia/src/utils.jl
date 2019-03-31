@@ -6,7 +6,6 @@ function normalize!(counts)
     end
 end
 
-
 """
 Basic error count evaluator for universal tag prediction. We assume data
 from MLDatasets and model from providing array of tags for each sentence.
