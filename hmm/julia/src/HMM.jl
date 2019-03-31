@@ -157,15 +157,15 @@ end
 Return initial state probabilities
 """
 function hmmtrain_initial(traindata::Array{Instance,1})::Array{Float64,1}
-    counts::Dict{String,Float64} = Dict(t=>0 for t in TAGS)
+    tag2i = Dict(t=>i for (i, t) in enumerate(TAGS))
+    initial = zeros(length(TAGS))
     tagindex = 4
 
     for x in traindata
-        counts[x[1][tagindex]] += 1
+        initial[tag2i[x[1][tagindex]]] += 1
     end
 
-    normalize!(counts)
-    map(t -> counts[t], TAGS)
+    initial / sum(initial)
 end
 
 """
