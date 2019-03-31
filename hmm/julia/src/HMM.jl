@@ -149,11 +149,11 @@ hidden states.
 function hmmtrain_supervised(traindata::Array{Instance,1})::HMModel
     initial = hmmtrain_initial(traindata)
     transition = hmmtrain_transition(traindata)
+    emission = hmmtrain_emission(traindata)
     ofn = observations_fn(traindata)
     m = ofn("some gibberish that is not in vocab")
 
-    # TODO
-    HMModel(length(TAGS), m, transition, initial, nothing)
+    HMModel(length(TAGS), m, transition, initial, emission)
 end
 
 """
@@ -189,6 +189,29 @@ function hmmtrain_transition(traindata::Array{Instance,1})::Array{Float64,2}
     end
 
     transition ./ sum(transition, dims=2)
+end
+
+"""
+Return emission probabilities from n states to m observations
+"""
+function hmmtrain_emission(traindata::Array{Instance,1})::Array{Float64,2}
+    tag2i = Dict(t=>i for (i, t) in enumerate(TAGS))
+    ofn = observations_fn(traindata)
+    m = ofn("some gibberish that is not in vocab")
+    stemindex = 3
+    tagindex = 4
+
+    # Start with one for smoothing
+    emission = ones(length(TAGS), m)
+    for x in traindata
+        for word in x
+            oi = ofn(word[stemindex])
+            ni = tag2i[word[tagindex]]
+            emission[ni, oi] += 1
+        end
+    end
+
+    emission ./ sum(emission, dims=2)
 end
 
 """
