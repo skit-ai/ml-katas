@@ -104,18 +104,18 @@ function observations_fn(traindata::Array{Instance,1})
     traintokens = []
     for x in traindata
         for word in x
-            push!(traintokens, word[stemindex])
+            push!(traintokens, lowercase(word[stemindex]))
         end
     end
     traintokens = unique(sort(traintokens))
     token2index = Dict(tk=>i for (i, tk) in enumerate(traintokens))
 
     function word2o(word::String)::Int
-        if !(word in keys(token2index))
+        if !(lowercase(word) in keys(token2index))
             # Last token represents oov
             return length(traintokens) + 1
         else
-            token2index[word]
+            token2index[lowercase(word)]
         end
     end
 end
