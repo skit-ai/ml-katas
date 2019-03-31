@@ -7,13 +7,8 @@ export TAGS
 export StemCount, stemtrain, predict
 export evaluate
 
+include("types.jl")
 include("utils.jl")
-
-# Instance is a list of word attributes as kept in MLDatasets
-Instance = Array{Array{String,1},1}
-
-# Prediction is a list of tag, one for each word
-Prediction = Array{String,1}
 
 # These are the tags that we are interested in predicting
 const TAGS = [
