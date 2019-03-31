@@ -5,6 +5,7 @@ Consider a consistent program as a black-box, assume:
 - For same inputs the result will always be the same (there is no impact of state or time)
 - The program may throw exceptions which can be considered as an output.
 - Many inputs may lead to same output.
+- Type(s) of input(s) are known.
 
 Using this system as a dataset, try to train a Recurrent Neural Network which is able to 
 guess the output.
