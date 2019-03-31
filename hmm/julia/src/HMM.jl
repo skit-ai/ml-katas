@@ -7,12 +7,15 @@ export TAGS
 export StemCount, stemtrain, predict
 export evaluate
 
+include("utils.jl")
+
 # Instance is a list of word attributes as kept in MLDatasets
 Instance = Array{Array{String,1},1}
 
 # Prediction is a list of tag, one for each word
 Prediction = Array{String,1}
 
+# These are the tags that we are interested in predicting
 const TAGS = [
     "DET",
     "PROPN",
@@ -120,7 +123,7 @@ function likelihood(model::HMModel, x::Instance)::Float64
 end
 
 """
-Problem 3 from rabiner
+Estimate parameters for the hmm
 """
 function hmmtrain(traindata::Array{Instance,1})::HMModel
     # TODO
