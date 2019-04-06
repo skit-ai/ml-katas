@@ -1,5 +1,7 @@
 # ml-katas
 
+![Travis (.org)](https://img.shields.io/travis/Vernacular-ai/ml-katas.svg?style=flat-square)
+
 Katas for Machine Learning.
 
 ## Template for new kata
