@@ -219,6 +219,7 @@ states (tags)
 function predict(model::HMModel, x::Instance)::Prediction
     stateprob = model.initial'
 
+    # TODO: This is a basic decoding method, not the most correct one.
     tags = []
     for word in x
         oi = model.ofn(word)
