@@ -2,3 +2,12 @@
 
 Here is a Julia implementation of hmm. See the parent kata readme for what is
 going to go here.
+
+We use default data splits for UD English from [[https://github.com/JuliaML/MLDatasets.jl][MLDatasets]] package.
+
+** Supervised modelling
+
+For supervised modelling of tags, we consider tags as hidden states and
+downcased word stems as observations. Learning is done by counting.
+
+** TODO Unsupervised modelling

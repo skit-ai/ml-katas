@@ -4,8 +4,9 @@ import Random
 using StatsBase
 
 export TAGS
-export StemCount, stemtrain, predict
-export evaluate
+export StemCount, stemtrain
+export HMModel, hmmtrain_supervised
+export likelihood, predict, evaluate
 
 include("types.jl")
 include("utils.jl")
@@ -32,14 +33,14 @@ const TAGS = [
 ]
 
 """
-A random tag prediction that gives around 94% error
+A random tag prediction that gives around 94% dev error
 """
 function predict(x::Instance)::Prediction
     map(_ -> TAGS[Random.rand(1:end)], x)
 end
 
 """
-Plain unigram-ish count gives 18% error
+Plain unigram-ish count gives 18% dev error
 """
 struct StemCount
     counts::Dict{String, Dict{String, Float64}}
@@ -214,7 +215,7 @@ end
 
 """
 Look at the observations (features from words) and predict internal
-states (tags)
+states (tags). Gives around 14% dev error.
 """
 function predict(model::HMModel, x::Instance)::Prediction
     statedist = model.initial'
