@@ -7,13 +7,11 @@ Katas for Machine Learning.
 Pick a topic, create an _exercise_ using the following suggested template
 (subject to change):
 
-```
-1. what do you want to learn at the end of this exercise?
+1. what will we get to learn at the end of this exercise?
 2. how is your environment going to look like
   - datasets you are working with
-  - tools, languages etc
-3. reference documents, papers
-```
+  - ~tools, languages etc~ since people might want to try different things here, this information can go in the solution readmes
+3. reference documents, papers, baselines etc.
 
 Work on the solution and keep pushing in this repo. The directory structure can
 look like this:
