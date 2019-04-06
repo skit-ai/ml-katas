@@ -131,7 +131,7 @@ function likelihood(model::HMModel, x::Instance)::Float64
     logprob = 0
     for word in x
         oi = model.ofn(word)
-        logprob += log(sum(statedist .* model.emission[:, oi]))
+        logprob += log(statedist * model.emission[:, oi])
         statedist = statedist * model.transition
     end
 
@@ -212,10 +212,25 @@ function hmmtrain_emission(traindata::Array{Instance,1})::Array{Float64,2}
 end
 
 """
-NOTE: Only when the observed sequence is words and hidden states are tags.
+Look at the observations (features from words) and predict internal
+states (tags)
 """
 function predict(model::HMModel, x::Instance)::Prediction
-    # TODO
+    stateprob = model.initial'
+
+    tags = []
+    for word in x
+        oi = model.ofn(word)
+        stateprob = stateprob .* model.emission[:, oi]'
+        # NOTE: since we don't care about the value across time steps, we are
+        #       normalizing to avoid underflow
+        stateprob /= sum(stateprob)
+
+        push!(tags, TAGS[argmax(stateprob')])
+        stateprob = stateprob * model.transition
+    end
+
+    tags
 end
 
 end
