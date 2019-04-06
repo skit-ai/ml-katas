@@ -1,0 +1,12 @@
+language: generic
+
+git:
+  depth: 1
+
+addons:
+  apt:
+    packages:
+      - fish
+
+script:
+  - fish ./test-katas.fish
