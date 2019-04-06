@@ -123,19 +123,20 @@ function observationfn(traindata::Array{Instance,1})
 end
 
 """
-Tell log likelihood of observed values (words here).
+Tell likelihood of observed values (words here).
 """
 function likelihood(model::HMModel, x::Instance)::Float64
+    # TODO: Check why likelihood values are not aligning
     statedist = model.initial'
+    statedist = statedist .* model.emission[:, model.ofn(x[1])]'
 
-    logprob = 0
-    for word in x
+    for word in x[2:end]
         oi = model.ofn(word)
-        logprob += log(statedist * model.emission[:, oi])
         statedist = statedist * model.transition
+        statedist = statedist .* model.emission[:, oi]'
     end
 
-    logprob
+    sum(statedist)
 end
 
 """
