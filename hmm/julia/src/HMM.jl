@@ -217,22 +217,28 @@ Look at the observations (features from words) and predict internal
 states (tags)
 """
 function predict(model::HMModel, x::Instance)::Prediction
-    stateprob = model.initial'
+    statedist = model.initial'
+    statedist = statedist .* model.emission[:, model.ofn(x[1])]'
 
-    # TODO: This is a basic decoding method, not the most correct one.
-    tags = []
-    for word in x
+    trace = zeros(model.n, length(x))
+    for (i, word) in enumerate(x[2:end])
         oi = model.ofn(word)
-        stateprob = stateprob .* model.emission[:, oi]'
-        # NOTE: since we don't care about the value across time steps, we are
-        #       normalizing to avoid underflow
-        stateprob /= sum(stateprob)
+        tprobs = statedist' .* model.transition
 
-        push!(tags, TAGS[argmax(stateprob')])
-        stateprob = stateprob * model.transition
+        trace[:, i + 1] = map(it -> it[1], argmax(tprobs, dims=1))
+
+        statedist = maximum(tprobs, dims=1) .* model.emission[:, oi]'
+        statedist /= sum(statedist)
     end
 
-    tags
+    # Backtrack
+    tindices = [argmax(statedist')[1]]
+
+    for probs in eachcol(reverse(trace, dims=2)[:, 1:end - 1])
+        push!(tindices, probs[tindices[end]])
+    end
+
+    map(i -> TAGS[i], reverse(tindices))
 end
 
 end
