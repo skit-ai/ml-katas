@@ -176,7 +176,9 @@ Return state transition probabilities
 function hmmtrain_transition(traindata::Array{Instance,1})::Array{Float64,2}
     tag2i = Dict(t=>i for (i, t) in enumerate(TAGS))
     tagindex = 4
-    transition = zeros(length(TAGS), length(TAGS))
+
+    # Starting with one for smoothing
+    transition = ones(length(TAGS), length(TAGS))
 
     for x in traindata
         for i in 1:(length(x)-1)
