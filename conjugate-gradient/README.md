@@ -2,14 +2,14 @@
 
 ## What goes here?
 
-Conjugate gradient solver, linear and non-linear one. One of the main ideas is
-to notice the trade-offs and other practicalities, therefore we might need to
-implement a few baselines too.
+Conjugate Gradient (CG) solvers, linear and non-linear ones. One of the main
+ideas is to notice the trade-offs and other practicalities, therefore we might
+need to implement a few baselines too.
 
 ## Environment
 
 Datasets that cover all the important properties of CG should be helpful. For
-example, we can take a simple quadratic problem, a _large_ quadratic problem, a
+example, we can take a simple quadratic problem, a _larger_ quadratic problem, a
 non-linear problem etc.
 
 Interesting things to look for include memory and compute requirements, number
